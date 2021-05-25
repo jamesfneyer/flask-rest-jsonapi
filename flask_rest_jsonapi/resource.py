@@ -286,6 +286,8 @@ class ResourceDetail(with_metaclass(ResourceMeta, Resource)):
                                 qs.include)
 
         data = self._validate_schema(args, kwargs, schema)
+        if isinstance(data, tuple):
+            return data
 
         self.before_patch(args, kwargs, data=data)
 
@@ -304,11 +306,9 @@ class ResourceDetail(with_metaclass(ResourceMeta, Resource)):
 
         self.delete_object(kwargs)
 
-        result = {'meta': {'message': 'Object successfully deleted'}}
+        self.after_delete()
 
-        final_result = self.after_delete(result)
-
-        return final_result
+        return None, 204
 
     def before_get(self, args, kwargs):
         """Hook to make custom work before get method"""
@@ -330,9 +330,9 @@ class ResourceDetail(with_metaclass(ResourceMeta, Resource)):
         """Hook to make custom work before delete method"""
         pass
 
-    def after_delete(self, result):
+    def after_delete(self):
         """Hook to make custom work after delete method"""
-        return result
+        pass
 
     def before_marshmallow(self, args, kwargs):
         pass
