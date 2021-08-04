@@ -53,6 +53,8 @@ class ResourceMeta(MethodViewType):
 class Resource(MethodView):
     """Base resource class"""
 
+    default_include = []
+
     def __new__(cls, *args, **kwargs):
         """Constructor of a resource instance"""
         if hasattr(cls, '_data_layer'):
@@ -160,7 +162,7 @@ class ResourceList(with_metaclass(ResourceMeta, Resource)):
         schema = compute_schema(self.schema,
                                 schema_kwargs,
                                 qs,
-                                qs.include)
+                                qs.include + self.default_include)
 
         result = schema.dump(objects)
 
@@ -185,7 +187,7 @@ class ResourceList(with_metaclass(ResourceMeta, Resource)):
         schema = compute_schema(self.schema,
                                 getattr(self, 'post_schema_kwargs', dict()),
                                 qs,
-                                qs.include)
+                                qs.include + self.default_include)
 
         data = self._validate_schema(args, kwargs, schema)
         if isinstance(data, tuple):
@@ -266,7 +268,7 @@ class ResourceDetail(with_metaclass(ResourceMeta, Resource)):
         schema = compute_schema(self.schema,
                                 getattr(self, 'get_schema_kwargs', dict()),
                                 qs,
-                                qs.include)
+                                qs.include + self.default_include)
 
         result = schema.dump(obj) if obj else None
 
@@ -283,7 +285,7 @@ class ResourceDetail(with_metaclass(ResourceMeta, Resource)):
         schema = compute_schema(self.schema,
                                 schema_kwargs,
                                 qs,
-                                qs.include)
+                                qs.include + self.default_include)
 
         data = self._validate_schema(args, kwargs, schema)
         if isinstance(data, tuple):
